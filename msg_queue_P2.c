@@ -1,11 +1,9 @@
 #include<stdio.h> 
 #include<sys/ipc.h> 
-#include<sys/msg.h> 
-#include<string.h>
+#include<sys/msg.h>
 #include<sys/types.h>
-#include<fcntl.h>
-#include<sys/stat.h>
 #include<unistd.h>
+#include<string.h> 
 struct msg_buffer 
 { 
     long msg_type; 
@@ -14,17 +12,16 @@ struct msg_buffer
 int main()
 {
 	int pidOfProcess=getpid();
-	char *myfifo1="/tmp/myfifo1";
-	mkfifo(myfifo1,0666);
-	int fd=open(myfifo1,O_WRONLY);
-	write(fd,&pidOfProcess,sizeof(pidOfProcess));
-	sleep(30);
 	key_t key=ftok("msg_queue",100);
-	int msgid_ds=msgget(key,0666 | IPC_CREAT);
+	int msgid=msgget(key,0666 | IPC_CREAT);
+	message.msg_type=pidOfProcess;
+	strcpy(message.msg_text,"P2");
+	msgsnd(msgid,&message,sizeof(message),0);
+	sleep(30);
 	int f;
 	while(1)
 	{
-		msgrcv(msgid_ds,&message,sizeof(message),getpid(),0);
+		msgrcv(msgid,&message,sizeof(message),getpid(),0);
 		f=strcmp(message.msg_text,"end");
       		if(f==0)
       		break;
