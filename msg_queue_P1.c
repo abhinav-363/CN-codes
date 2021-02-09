@@ -2,6 +2,7 @@
 #include<sys/ipc.h> 
 #include<sys/msg.h>
 #include<string.h> 
+#include<unistd.h>
 struct msg_buffer 
 { 
     long msg_type; 
