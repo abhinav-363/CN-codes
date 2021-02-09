@@ -1,11 +1,7 @@
 #include<stdio.h> 
 #include<sys/ipc.h> 
-#include<unistd.h>
-#include<signal.h>
-#include<fcntl.h>
-#include<sys/msg.h> 
-#include<sys/stat.h>
-#include<string.h>
+#include<sys/msg.h>
+#include<string.h> 
 struct msg_buffer 
 { 
     long msg_type; 
@@ -13,20 +9,15 @@ struct msg_buffer
 }message; 
 int main()
 {
-	char *myfifo1="/tmp/myfifo1";
-	mkfifo(myfifo1,0666);
-	int pid2,pid3;
-	int fd1=open(myfifo1,O_RDONLY);
-	read(fd1,&pid2,1024);
-	printf("%d\n",pid2);
-	char *myfifo2="/tmp/myfifo2";
-	mkfifo(myfifo2,0666);
-	int fd2=open(myfifo2,O_RDONLY);
-	read(fd2,&pid3,1024);
-	printf("%d\n",pid3);
+	int pid2,pid3,n;
 	key_t key=ftok("msg_queue",100);
 	int msgid=msgget(key,0666 | IPC_CREAT);
-	int n;
+	msgrcv(msgid,&message,sizeof(message),0,0);
+	pid2=message.msg_type;
+	msgrcv(msgid,&message,sizeof(message),0,0);
+	pid3=message.msg_type;
+	printf("%d\n",pid2);
+	printf("%d\n",pid3);
 	printf("Enter the total no. of messages you want to send from P1 : ");
 	scanf("%d",&n);
 	while(n--)
